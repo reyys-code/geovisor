@@ -1,154 +1,142 @@
-
-
-
-
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Visor GeoServer</title>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width">
+  <head>
+      <title>Visor GeoServer</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+  
+    <!-- Leaflet CSS y JS desde CDN -->
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script
+          src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+    </script>
+  
+    <style>
+          body { margin: 0; }
+          #mapa { width: 100vw; height: 100vh; }
+        </style>
+  </head>
+  <body>
 
-  <!-- Leaflet CSS y JS desde CDN -->
-  <link rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
-  </script>
+      <div id="mapa"></div>div>
 
-  <style>
-    body { margin: 0; }
-    #mapa { width: 100vw; height: 100vh; }
-  </style>
-</head>
-<body>
+      <script>
+            // 1. Crear el mapa centrado en Sudamerica
+            var mapa = L.map('mapa').setView([-16.5, -64.5], 6);
 
-  <div id="mapa"></div>
+            // 2. Mapas base
+            var satelite = L.tileLayer(
+                    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                              attribution: 'Tiles &copy; Esri &mdash; Source: Esri, USGS, NOAA - ARTECLAB',
+                              maxNativeZoom: 17,
+                              maxZoom: 21
+                    });
 
-  <script>
-    // 1. Crear el mapa centrado en Sudamérica
-    var mapa = L.map('mapa').setView([-16.5, -64.5], 6);
+            var cartodb = L.tileLayer(
+                    'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                              attribution: '&copy; OpenStreetMap &copy; CARTO - ARTECLAB',
+                              subdomains: 'abcd',
+                              maxZoom: 20
+                    });
 
-    // 2. Mapas base
-    var satelite = L.tileLayer(
-      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-      attribution: 'Tiles &copy; Esri &mdash; Source: Esri, USGS, NOAA - ARTECLAB',
-      maxNativeZoom: 17,
-      maxZoom: 21
-    });
+            // Mapa base activo por defecto: satelite
+            satelite.addTo(mapa);
 
-    var cartodb = L.tileLayer(
-      'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; OpenStreetMap &copy; CARTO - ARTECLAB',
-      subdomains: 'abcd',
-      maxZoom: 20
-    });
+            var baseMaps = {
+                    "Satelite (Esri)": satelite,
+                    "Mapa claro (CartoDB)": cartodb
+            };
 
-    // Mapa base activo por defecto: satélite
-    satelite.addTo(mapa);
+            var departamentos = L.tileLayer.wms(
+                    'https://geoserver.inra.gob.bo/geoserver/wms', {
+                              layers: 'sinacar:layer_tierra_de_produccion_forestal_permanente_tn91ll',
+                              format: 'image/png', transparent: true
+                    });
+            var altiplano = L.tileLayer.wms(
+                    'https://8502a75081bf562e-181-115-172-19.serveousercontent.com/geoserver/DB_DEPARTAMENTOS/wms', {
+                              layers: 'DB_DEPARTAMENTOS:vista_departamentos_altiplano',
+                              format: 'image/png', transparent: true
+                    });
+            var red_vial = L.tileLayer.wms(
+                    'https://8502a75081bf562e-181-115-172-19.serveousercontent.com/geoserver/DEPARTAMENTOS/wms', {
+                              layers: 'DB_DEPARTAMENTOS:red_vial_fundamental_2021',
+                              format: 'image/png', transparent: true
+                    });
 
-    var baseMaps = {
-      "Satélite (Esri)": satelite,
-      "Mapa claro (CartoDB)": cartodb
-    };
+            // Capas locales GeoServer - workspace LA_PAZ
+            var limites = L.tileLayer.wms(
+                    'https://8502a75081bf562e-181-115-172-19.serveousercontent.com/geoserver/LA_PAZ/wms', {
+                              layers: 'LA_PAZ:limites',
+                              format: 'image/png',
+                              transparent: true,
+                              version: '1.1.0',
+                              attribution: 'GeoServer via Serveo'
+                    }).addTo(mapa);
 
-    // 3. Agregar capa WMS de tu GeoServer
-    /*var capaWMS = L.tileLayer.wms(
-    'http://192.168.100.116:8080/geoserver/DB_DEPARTAMENTOS/wms', {
-        layers: 'DB_DEPARTAMENTOS:departamentos',
-        format: 'image/png',
-        transparent: true,
-        version: '1.1.1',
-        attribution: 'Datos: mi GeoServer'
-    }
-    ).addTo(mapa);*/
+            var comunidades = L.tileLayer.wms(
+                    'https://8502a75081bf562e-181-115-172-19.serveousercontent.com/geoserver/LA_PAZ/wms', {
+                              layers: 'LA_PAZ:ca_cna_comunidades_cna_publicacion_nal_primera',
+                              format: 'image/png',
+                              transparent: true,
+                              version: '1.1.0',
+                              attribution: 'GeoServer via Serveo'
+                    }).addTo(mapa);
 
-    var departamentos = L.tileLayer.wms(
-    'https://geoserver.inra.gob.bo/geoserver/wms', {
-        layers: 'sinacar:layer_tierra_de_produccion_forestal_permanente_tn91ll',
-        format: 'image/png', transparent: true
-    });
-    var altiplano = L.tileLayer.wms(
-    'http://192.168.100.116:8080/geoserver/DB_DEPARTAMENTOS/wms', {
-        layers: 'DB_DEPARTAMENTOS:vista_departamentos_altiplano',
-        format: 'image/png', transparent: true
-    });
-    var red_vial = L.tileLayer.wms(
-    'http://192.168.100.116:8080/geoserver/DEPARTAMENTOS/wms', {
-        layers: 'DB_DEPARTAMENTOS:red_vial_fundamental_2021',
-        format: 'image/png', transparent: true
-    });
+            var overlays = {
+                    "Bolivia (INRA)": departamentos,
+                    "Altiplano": altiplano,
+                    "Red Vial": red_vial,
+                    "Limites La Paz": limites,
+                    "Comunidades La Paz": comunidades
+            };
 
-    // Capas locales GeoServer - workspace LA_PAZ
-    var limites = L.tileLayer.wms(
-    'http://localhost:8080/geoserver/LA_PAZ/wms', {
-        layers: 'LA_PAZ:limites',
-        format: 'image/png',
-        transparent: true,
-        version: '1.1.0',
-        attribution: 'GeoServer local'
-    }).addTo(mapa);
+            L.control.layers(baseMaps, overlays).addTo(mapa);
 
-    var comunidades = L.tileLayer.wms(
-    'http://localhost:8080/geoserver/LA_PAZ/wms', {
-        layers: 'LA_PAZ:ca_cna_comunidades_cna_publicacion_nal_primera',
-        format: 'image/png',
-        transparent: true,
-        version: '1.1.0',
-        attribution: 'GeoServer local'
-    }).addTo(mapa);
+            // 4. GetFeatureInfo al hacer clic
+            mapa.on('click', function(e) {
+                    var latlng = e.latlng;
+                    var bounds = mapa.getBounds();
+                    var size = mapa.getSize();
+                    var point = mapa.latLngToContainerPoint(latlng);
 
-    var overlays = {
-    "Bolivia (INRA)": departamentos,
-    "Altiplano": altiplano,
-    "Red Vial": red_vial,
-    "Límites La Paz": limites,
-    "Comunidades La Paz": comunidades
-    };
+                    var url = 'https://8502a75081bf562e-181-115-172-19.serveousercontent.com/geoserver/DEPARTAMENTOS/wms?'
+                      + 'SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo'
+                      + '&LAYERS=DB_DEPARTAMENTOS:vista_departamentos_altiplano'
+                      + '&QUERY_LAYERS=DB_DEPARTAMENTOS:vista_departamentos_altiplano'
+                      + '&INFO_FORMAT=application/json'
+                      + '&SRS=EPSG:4326'
+                      + '&WIDTH=' + size.x + '&HEIGHT=' + size.y
+                      + '&BBOX=' + bounds.toBBoxString()
+                      + '&X=' + Math.round(point.x)
+                      + '&Y=' + Math.round(point.y);
 
-    L.control.layers(baseMaps, overlays).addTo(mapa);
-   
-
-    //GetFeatureInfo
-    // 4. GetFeatureInfo al hacer clic
-    mapa.on('click', function(e) {
-    var latlng = e.latlng;
-    var bounds = mapa.getBounds();
-    var size = mapa.getSize();
-    var point = mapa.latLngToContainerPoint(latlng);
-
-    var url = 'http://192.168.100.116:8080/geoserver/DEPARTAMENTOS/wms?'
-        + 'SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo'
-        + '&LAYERS=DB_DEPARTAMENTOS:vista_departamentos_altiplano'
-        + '&QUERY_LAYERS=DB_DEPARTAMENTOS:vista_departamentos_altiplano'
-        + '&INFO_FORMAT=application/json'
-        + '&SRS=EPSG:4326'
-        + '&WIDTH=' + size.x + '&HEIGHT=' + size.y
-        + '&BBOX=' + bounds.toBBoxString()
-        + '&X=' + Math.round(point.x)
-        + '&Y=' + Math.round(point.y);
-
-    fetch(url)
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-        if (data.features && data.features.length > 0) {
-            var props = data.features[0].properties;
-            var html = '<b>' + (props.name || 'Sin nombre') + '</b><br>';
-            for (var key in props) {
-            if (key !== 'bbox') {
-                html += key + ': ' + props[key] + '<br>';
-            }
-            }
-            L.popup()
-            .setLatLng(latlng)
-            .setContent(html)
-            .openOn(mapa);
-        }
-        });
-    });
+                    fetch(url)
+                      .then(function(r) { return r.json(); })
+                      .then(function(data) {
+                                  if (data.features && data.features.length > 0) {
+                                                var props = data.features[0].properties;
+                                                var html = '<b>' + (props.name || 'Sin nombre') + '</b><br>';
+                                                for (var key in props) {
+                                                                if (key !== 'bbox') {
+                                                                                  html += key + ': ' + props[key] + '<br>';
+                                                                }
+                                                }
+                                                L.popup()
+                                                  .setLatLng(latlng)
+                                                  .setContent(html)
+                                                  .openOn(mapa);
+                                  }
+                      });
+            });
 
 
-  </script>
+      </script>
 
-</body>
+  </body>
+</html>
+      </script>
+  </body>
+    </style></title>
+  </head>
 </html>
