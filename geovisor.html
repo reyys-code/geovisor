@@ -54,19 +54,19 @@
                               format: 'image/png', transparent: true
                     });
             var altiplano = L.tileLayer.wms(
-                    'https://8502a75081bf562e-181-115-172-19.serveousercontent.com/geoserver/DB_DEPARTAMENTOS/wms', {
+                    'https://639475e64a7f3d7f-181-115-172-19.serveousercontent.com/geoserver/DB_DEPARTAMENTOS/wms', {
                               layers: 'DB_DEPARTAMENTOS:vista_departamentos_altiplano',
                               format: 'image/png', transparent: true
                     });
             var red_vial = L.tileLayer.wms(
-                    'https://8502a75081bf562e-181-115-172-19.serveousercontent.com/geoserver/DEPARTAMENTOS/wms', {
+                    'https://639475e64a7f3d7f-181-115-172-19.serveousercontent.com/geoserver/DEPARTAMENTOS/wms', {
                               layers: 'DB_DEPARTAMENTOS:red_vial_fundamental_2021',
                               format: 'image/png', transparent: true
                     });
 
             // Capas locales GeoServer - workspace LA_PAZ
             var limites = L.tileLayer.wms(
-                    'https://8502a75081bf562e-181-115-172-19.serveousercontent.com/geoserver/LA_PAZ/wms', {
+                    'https://639475e64a7f3d7f-181-115-172-19.serveousercontent.com/geoserver/LA_PAZ/wms', {
                               layers: 'LA_PAZ:limites',
                               format: 'image/png',
                               transparent: true,
@@ -75,7 +75,7 @@
                     }).addTo(mapa);
 
             var comunidades = L.tileLayer.wms(
-                    'https://8502a75081bf562e-181-115-172-19.serveousercontent.com/geoserver/LA_PAZ/wms', {
+                    'https://639475e64a7f3d7f-181-115-172-19.serveousercontent.com/geoserver/LA_PAZ/wms', {
                               layers: 'LA_PAZ:ca_cna_comunidades_cna_publicacion_nal_primera',
                               format: 'image/png',
                               transparent: true,
@@ -100,7 +100,7 @@
                     var size = mapa.getSize();
                     var point = mapa.latLngToContainerPoint(latlng);
 
-                    var url = 'https://8502a75081bf562e-181-115-172-19.serveousercontent.com/geoserver/DEPARTAMENTOS/wms?'
+                    var url = 'https://639475e64a7f3d7f-181-115-172-19.serveousercontent.com/geoserver/DEPARTAMENTOS/wms?'
                       + 'SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo'
                       + '&LAYERS=DB_DEPARTAMENTOS:vista_departamentos_altiplano'
                       + '&QUERY_LAYERS=DB_DEPARTAMENTOS:vista_departamentos_altiplano'
